@@ -4,6 +4,7 @@
 
 use core::{
     cell::UnsafeCell,
+    fmt::{self, Debug, Formatter},
     marker::PhantomData,
     mem,
 };
@@ -333,6 +334,14 @@ impl<'brand, T> GhostCell<'brand, T> {
         }
 
         crate::ghost_borrow_mut::GhostBorrowMut::borrow_mut((self, other), token).map(|(a, b)| mem::swap(a, b))
+    }
+}
+
+impl<'brand, T: Debug> Debug for GhostCell<'brand, T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.debug_struct("GhostCell")
+            .field("value", self.get())
+            .finish()
     }
 }
 

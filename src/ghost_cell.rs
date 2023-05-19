@@ -178,6 +178,14 @@ impl<'brand, T: ?Sized> GhostCell<'brand, T> {
     /// Returns a raw pointer to the contained value.
     pub const fn as_ptr(&self) -> *mut T { self.value.get() }
 
+    /// Turns a borrowed `GhostCell` into borrowed data.
+    pub fn get(&self) -> &T {
+        //  Safety:
+        //  -   `self` is mutably borrowed for the duration.
+        //  -   `GhostCell<'_, T>` has the same in-memory representation as `T`.
+        unsafe { mem::transmute(self) }
+    }
+
     /// Turns a mutably borrowed `GhostCell` into mutably borrowed data.
     ///
     /// `self` is mutably borrowed for the lifetime of the result, ensuring the absence of aliasing.
